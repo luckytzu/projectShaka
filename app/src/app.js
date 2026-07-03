@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { auth, db, googleProvider } from "./lib/firebase";
 import { onAuthStateChanged, signInWithPopup, signOut } from "firebase/auth";
-import { doc, getDoc, setDoc, getDocs, collection, query, where, updateDoc, addDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, getDocs, collection, query, where, updateDoc, addDoc, deleteDoc } from "firebase/firestore";
 
 import LoginScreen from "./component/Auth/LoginScreen";
 import SearchBar from "./component/Search/SearchBar";
@@ -118,6 +118,29 @@ export default function SupernaturalApp() {
     setEditingId(null);
     setFormData({ nom: '', description: '', niveauAcces: 'tous', imageUrl: '' });
     setMessage('');
+  };
+
+  const handleDeleteClick = async (item) => {
+    // 1. La demande de confirmation
+    const confirmDelete = window.confirm(`Êtes-vous sûr de vouloir supprimer définitivement les données sur "${item.nom}" ?`);
+    
+    // 2. Si l'admin clique sur "OK"
+    if (confirmDelete) {
+      setLoading(true);
+      setMessage('');
+      try {
+        // On supprime le document de la collection active (monstres ou personnages)
+        await deleteDoc(doc(db, searchTab, item.id));
+        setMessage(`La fiche de "${item.nom}" a été supprimée des archives.`);
+        
+        // On rafraîchit la liste pour faire disparaître la carte
+        fetchAllData(); 
+      } catch (error) {
+        setMessage("Erreur lors de la suppression : " + error.message);
+      } finally {
+        setLoading(false);
+      }
+    }
   };
 
   const handleSubmitForm = async (e) => {
@@ -271,6 +294,7 @@ export default function SupernaturalApp() {
                       userRole={userRole} 
                       onClick={() => setSelectedItem(item)} 
                       onEdit={handleEditClick} 
+                      onDelete={handleDeleteClick}
                       isFBI={isFBI} // On passe l'info du thème !
                     />
                   ))

@@ -1,4 +1,4 @@
-export default function ItemCard({ item, userRole, onClick, onEdit, isFBI }) {
+export default function ItemCard({ item, userRole, onClick, onEdit, onDelete, isFBI }) {
   // Styles dynamiques selon le thème
   const cardTheme = isFBI 
     ? "bg-black/80 border-cyan-900 hover:border-cyan-400 hover:shadow-[0_0_15px_rgba(34,211,238,0.3)] font-sans" 
@@ -32,19 +32,37 @@ export default function ItemCard({ item, userRole, onClick, onEdit, isFBI }) {
         </p>
         
         {userRole === 'admin' && (
-          <button 
-            onClick={(e) => { 
-              e.stopPropagation(); 
-              onEdit(item); 
-            }}
-            className={`mt-auto w-full text-sm py-2 rounded transition-colors ${
-              isFBI 
-                ? 'bg-cyan-950 hover:bg-cyan-900 text-cyan-400 border border-cyan-900 uppercase font-mono' 
-                : 'bg-[#3a2218] hover:bg-[#4a2e1b] text-amber-500 border border-[#4a2e1b] font-serif'
-            }`}
-          >
-            {isFBI ? 'EDIT_RECORD' : 'Modifier les écrits'}
-          </button>
+          <div className="mt-auto flex gap-2">
+            {/* BOUTON MODIFIER */}
+            <button 
+              onClick={(e) => { 
+                e.stopPropagation(); 
+                onEdit(item); 
+              }}
+              className={`flex-1 text-sm py-2 rounded transition-colors ${
+                isFBI 
+                  ? 'bg-cyan-950 hover:bg-cyan-900 text-cyan-400 border border-cyan-900 uppercase font-mono' 
+                  : 'bg-[#3a2218] hover:bg-[#4a2e1b] text-amber-500 border border-[#4a2e1b] font-serif'
+              }`}
+            >
+              {isFBI ? 'EDIT_RECORD' : 'Modifier'}
+            </button>
+
+            {/* BOUTON SUPPRIMER */}
+            <button 
+              onClick={(e) => { 
+                e.stopPropagation(); 
+                onDelete(item); 
+              }}
+              className={`flex-1 text-sm py-2 rounded transition-colors ${
+                isFBI 
+                  ? 'bg-red-950/30 hover:bg-red-900/60 text-red-500 border border-red-900/50 uppercase font-mono' 
+                  : 'bg-[#3a1515]/50 hover:bg-[#5a1a1a] text-red-400 border border-[#4a1b1b] font-serif'
+              }`}
+            >
+              {isFBI ? 'PURGE_DATA' : 'Brûler la page'}
+            </button>
+          </div>
         )}
       </div>
     </div>
