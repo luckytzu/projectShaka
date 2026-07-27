@@ -8,10 +8,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
+      # 1. Installer Node.js (bonnes pratiques)
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      # 2. Installer les dépendances du projet (étape manquante)
+      - run: npm ci
+
+      # 3. Compiler l'application Next.js
       - run: npm run build
+
+      # 4. Déployer sur Firebase
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PROJETSHAKA }}
-          channelId: live
           projectId: projetshaka
