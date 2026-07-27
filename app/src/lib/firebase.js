@@ -1,4 +1,4 @@
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
@@ -11,7 +11,15 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
 };
 
-const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
-export const db = getFirestore(app);
+// 1. On vérifie si l'app existe déjà
+// 2. Si non, on l'initialise seulement si la clé d'API est présente
+const app = getApps().length > 0 
+  ? getApp() 
+  : firebaseConfig.apiKey 
+    ? initializeApp(firebaseConfig) 
+    : null;
+
+// Initialisation sécurisée pour le build
+export const auth = app ? getAuth(app) : null;
+export const db = app ? getFirestore(app) : null;
 export const googleProvider = new GoogleAuthProvider();

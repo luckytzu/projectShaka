@@ -3,24 +3,23 @@ on:
   push:
     branches:
       - main
+
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       
-      # 1. Installer Node.js (bonnes pratiques)
+      # 1. Configuration de Node.js
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
 
-      # 2. Installer les dépendances du projet (étape manquante)
+      # 2. Installation propre des dépendances
       - run: npm ci
 
-      # 3. Compiler l'application Next.js
-      - run: npm run build
-
+      # 3. Compilation Next.js avec injection des variables d'environnement
       - name: Build Next.js
         run: npm run build
         env:
@@ -31,9 +30,10 @@ jobs:
           NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
           NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
 
-      # 4. Déployer sur Firebase
+      # 4. Déploiement automatique sur Firebase Hosting
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PROJETSHAKA }}
+          channelId: live
           projectId: projetshaka
